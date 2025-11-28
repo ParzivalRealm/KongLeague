@@ -1,0 +1,65 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Admin Login - KongLeague{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-12">
+    <div class="bg-kong-purple rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-kong-dark border-b border-kong-gold/20 text-center">
+            <h2 class="text-3xl font-bold text-kong-gold flex items-center justify-center">
+                <span class="mr-2">🔐</span> Admin Login
+            </h2>
+        </div>
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                        Usuario
+                    </label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        required
+                        class="w-full px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-kong-gold transition"
+                        placeholder="Ingresa tu usuario"
+                    >
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Contraseña
+                    </label>
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        required
+                        class="w-full px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-kong-gold transition"
+                        placeholder="Ingresa tu contraseña"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-kong-gold hover:bg-yellow-600 text-kong-darker font-bold py-3 px-4 rounded-lg transition transform hover:scale-105"
+                >
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <a href="{% url 'standings' %}" class="text-gray-400 hover:text-kong-gold transition text-sm">
+                    ← Volver a la página principal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 text-center text-gray-500 text-sm">
+        <p>Solo para administradores del torneo</p>
+    </div>
+</div>
+{% endblock %}

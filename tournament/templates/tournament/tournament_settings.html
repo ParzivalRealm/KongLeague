@@ -1,0 +1,112 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Configuración del Torneo - KongLeague{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <h1 class="text-4xl font-bold text-kong-gold flex items-center">
+            <span class="mr-3">⚙️</span> Configuración del Torneo
+        </h1>
+        <a href="{% url 'dashboard' %}" class="text-gray-400 hover:text-kong-gold transition">
+            ← Volver al Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Tournament Status -->
+<div class="bg-kong-purple rounded-lg shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-bold text-kong-gold mb-4">Estado del Torneo</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_status">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Cambiar Estado</label>
+            <div class="flex space-x-3">
+                <select name="status" class="flex-1 px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold">
+                    <option value="upcoming" {% if tournament.status == 'upcoming' %}selected{% endif %}>Próximo</option>
+                    <option value="in_progress" {% if tournament.status == 'in_progress' %}selected{% endif %}>En Progreso</option>
+                    <option value="completed" {% if tournament.status == 'completed' %}selected{% endif %}>Completado</option>
+                </select>
+                <button type="submit" class="bg-kong-gold hover:bg-yellow-600 text-kong-darker font-bold py-2 px-6 rounded-lg transition">
+                    Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-kong-dark rounded-lg p-4">
+            <p class="text-gray-300">
+                <span class="font-semibold">Estado Actual:</span>
+                <span class="px-3 py-1 rounded-full text-sm font-semibold ml-2
+                    {% if tournament.status == 'completed' %}bg-green-500/20 text-green-400
+                    {% elif tournament.status == 'in_progress' %}bg-yellow-500/20 text-yellow-400
+                    {% else %}bg-gray-500/20 text-gray-400{% endif %}">
+                    {{ tournament.get_status_display }}
+                </span>
+            </p>
+        </div>
+    </form>
+</div>
+
+<!-- Set Champion -->
+<div class="bg-kong-purple rounded-lg shadow-lg p-6 mb-6">
+    <h2 class="text-2xl font-bold text-kong-gold mb-4">Declarar Campeón</h2>
+    <form method="post" onsubmit="return confirm('¿Estás seguro de declarar este equipo como campeón? Esto marcará el torneo como completado.');" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="set_champion">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Seleccionar Campeón</label>
+            <div class="flex space-x-3">
+                <select name="champion_id" required class="flex-1 px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold">
+                    <option value="">Seleccionar equipo...</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}" {% if tournament.champion == team %}selected{% endif %}>
+                        {{ team.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="bg-gradient-to-r from-kong-gold to-yellow-600 hover:from-yellow-600 hover:to-kong-gold text-kong-darker font-bold py-2 px-6 rounded-lg transition">
+                    🏆 Declarar Campeón
+                </button>
+            </div>
+        </div>
+
+        {% if tournament.champion %}
+        <div class="bg-gradient-to-r from-kong-gold/20 to-yellow-600/20 border-2 border-kong-gold rounded-lg p-4 text-center">
+            <p class="text-lg text-white">
+                <span class="text-2xl">🏆</span>
+                <span class="font-semibold">Campeón Actual:</span>
+                <span class="text-kong-gold font-bold text-xl ml-2">{{ tournament.champion.name }}</span>
+            </p>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Reset Tournament -->
+<div class="bg-kong-purple rounded-lg shadow-lg p-6 border-l-4 border-red-500">
+    <h2 class="text-2xl font-bold text-red-400 mb-4">⚠️ Zona de Peligro</h2>
+    <p class="text-gray-300 mb-4">
+        Reiniciar el torneo borrará todos los resultados de los partidos, pero mantendrá los equipos y las jornadas.
+    </p>
+    <form method="post" onsubmit="return confirm('⚠️ ADVERTENCIA ⚠️\n\n¿Estás seguro de reiniciar el torneo?\n\nEsto borrará:\n- Todos los resultados de partidos\n- El campeón actual\n- El estado del torneo\n\nLos equipos y jornadas se mantendrán.\n\n¿Continuar?');">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset">
+        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition">
+            🔄 Reiniciar Torneo
+        </button>
+    </form>
+</div>
+
+<!-- Tournament Info -->
+<div class="mt-6 bg-kong-dark rounded-lg p-6">
+    <h3 class="text-lg font-bold text-kong-gold mb-3">Información del Torneo</h3>
+    <div class="space-y-2 text-gray-300">
+        <p><span class="font-semibold">Nombre:</span> {{ tournament.name }}</p>
+        <p><span class="font-semibold">Creado:</span> {{ tournament.created_at|date:"d/m/Y H:i" }}</p>
+        <p><span class="font-semibold">Última actualización:</span> {{ tournament.updated_at|date:"d/m/Y H:i" }}</p>
+    </div>
+</div>
+{% endblock %}

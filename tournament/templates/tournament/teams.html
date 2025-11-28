@@ -1,0 +1,78 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Equipos - KongLeague{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-kong-gold mb-2 flex items-center">
+        <span class="mr-3">🦍</span> Equipos
+    </h1>
+    <p class="text-gray-400 text-lg">
+        Conoce a todos los competidores del torneo
+    </p>
+</div>
+
+{% if teams %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for team_data in teams %}
+    <div class="bg-kong-purple rounded-lg shadow-lg overflow-hidden hover:shadow-kong-gold/20 hover:shadow-2xl transition transform hover:-translate-y-1">
+        <div class="p-6">
+            <!-- Team Logo/Icon -->
+            <div class="flex items-center justify-center mb-4">
+                {% if team_data.team.logo_url %}
+                <img src="{{ team_data.team.logo_url }}" alt="{{ team_data.team.name }}" class="w-24 h-24 rounded-full border-2 border-kong-gold">
+                {% else %}
+                <div class="w-24 h-24 rounded-full bg-kong-dark border-2 border-kong-gold flex items-center justify-center text-4xl">
+                    🦍
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Team Name -->
+            <h3 class="text-2xl font-bold text-center text-kong-gold mb-2">
+                {{ team_data.team.name }}
+            </h3>
+
+            <!-- Captain -->
+            {% if team_data.team.captain_name %}
+            <p class="text-center text-gray-400 mb-4">
+                <span class="text-sm">Capitán:</span> <span class="text-white">{{ team_data.team.captain_name }}</span>
+            </p>
+            {% endif %}
+
+            <!-- Stats -->
+            <div class="bg-kong-dark rounded-lg p-4 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Victorias:</span>
+                    <span class="text-green-400 font-bold">{{ team_data.wins }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Derrotas:</span>
+                    <span class="text-red-400 font-bold">{{ team_data.losses }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">% Victoria:</span>
+                    <span class="text-kong-gold font-bold">{{ team_data.win_rate }}%</span>
+                </div>
+            </div>
+
+            <!-- Banana indicator for top teams -->
+            {% if team_data.wins > 0 %}
+            <div class="mt-4 text-center">
+                {% for i in "x"|rjust:team_data.wins %}
+                <span class="text-2xl">🍌</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-kong-purple rounded-lg shadow-lg p-12 text-center">
+    <p class="text-gray-400 text-xl">
+        No hay equipos registrados todavía
+    </p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KongLeague{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'kong-gold': '#FFD700',
+                        'kong-purple': '#1a1a2e',
+                        'kong-dark': '#16213e',
+                        'kong-darker': '#0f1419',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .banana-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes confetti-fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: confetti-fall 3s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-kong-darker text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-kong-purple border-b border-kong-gold/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'standings' %}" class="flex items-center space-x-2">
+                        <span class="text-3xl banana-float">🍌</span>
+                        <span class="text-2xl font-bold text-kong-gold">KongLeague</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'standings' %}" class="text-gray-300 hover:text-kong-gold transition px-3 py-2 rounded-md text-sm font-medium">
+                        Clasificación
+                    </a>
+                    <a href="{% url 'schedule' %}" class="text-gray-300 hover:text-kong-gold transition px-3 py-2 rounded-md text-sm font-medium">
+                        Calendario
+                    </a>
+                    <a href="{% url 'teams' %}" class="text-gray-300 hover:text-kong-gold transition px-3 py-2 rounded-md text-sm font-medium">
+                        Equipos
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="text-kong-gold hover:text-yellow-300 transition px-3 py-2 rounded-md text-sm font-medium">
+                        Dashboard
+                    </a>
+                    <a href="{% url 'admin_logout' %}" class="text-gray-300 hover:text-red-400 transition px-3 py-2 rounded-md text-sm font-medium">
+                        Salir
+                    </a>
+                    {% else %}
+                    <a href="{% url 'admin_login' %}" class="text-gray-300 hover:text-kong-gold transition px-3 py-2 rounded-md text-sm font-medium">
+                        Admin
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="bg-kong-purple border-l-4 {% if message.tags == 'error' %}border-red-500{% elif message.tags == 'success' %}border-green-500{% else %}border-kong-gold{% endif %} p-4 mb-4 rounded">
+            <p class="text-white">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-kong-purple border-t border-kong-gold/20 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-gray-400 text-sm">
+                <p class="mb-2">🦍 <span class="text-kong-gold font-semibold">Muestra Tu Fuerza</span> 🦍</p>
+                <p class="italic text-xs">Former coach, forever champion</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

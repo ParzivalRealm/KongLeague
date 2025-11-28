@@ -1,0 +1,194 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Gestionar Partidos - KongLeague{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <h1 class="text-4xl font-bold text-kong-gold flex items-center">
+            <span class="mr-3">⚔️</span> Gestionar Partidos
+        </h1>
+        <a href="{% url 'dashboard' %}" class="text-gray-400 hover:text-kong-gold transition">
+            ← Volver al Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Add Match Day Form -->
+<div class="bg-kong-purple rounded-lg shadow-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold text-kong-gold mb-4">Crear Nueva Jornada</h2>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_match_day">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Número de Jornada *</label>
+                <input
+                    type="number"
+                    name="day_number"
+                    required
+                    min="1"
+                    class="w-full px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold"
+                    placeholder="1"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Nombre *</label>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                    class="w-full px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold"
+                    placeholder="Ej: Jornada 1"
+                >
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Fecha (opcional)</label>
+                <input
+                    type="date"
+                    name="date"
+                    class="w-full px-4 py-2 bg-kong-dark border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold"
+                >
+            </div>
+        </div>
+
+        <button
+            type="submit"
+            class="bg-kong-gold hover:bg-yellow-600 text-kong-darker font-bold py-2 px-6 rounded-lg transition"
+        >
+            ➕ Crear Jornada
+        </button>
+    </form>
+</div>
+
+<!-- Match Days and Matches -->
+{% if match_days %}
+<div class="space-y-6">
+    {% for match_day in match_days %}
+    <div class="bg-kong-purple rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-kong-dark border-b border-kong-gold/20">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-kong-gold">{{ match_day.name }}</h2>
+                {% if match_day.date %}
+                <span class="text-gray-400">{{ match_day.date|date:"d/m/Y" }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="p-6">
+            <!-- Add Match Form -->
+            <div class="bg-kong-dark rounded-lg p-4 mb-4">
+                <h3 class="text-lg font-bold text-white mb-3">Agregar Partido a Esta Jornada</h3>
+                <form method="post" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_match">
+                    <input type="hidden" name="match_day_id" value="{{ match_day.id }}">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Equipo A</label>
+                            <select name="team_a_id" required class="w-full px-4 py-2 bg-kong-darker border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold">
+                                <option value="">Seleccionar...</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Equipo B</label>
+                            <select name="team_b_id" required class="w-full px-4 py-2 bg-kong-darker border border-kong-gold/30 rounded-lg text-white focus:outline-none focus:border-kong-gold">
+                                <option value="">Seleccionar...</option>
+                                {% for team in teams %}
+                                <option value="{{ team.id }}">{{ team.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                                ➕ Agregar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Matches List -->
+            {% if match_day.matches.all %}
+            <div class="space-y-3">
+                {% for match in match_day.matches.all %}
+                <div class="bg-kong-darker rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex-1">
+                            <span class="text-lg font-semibold {% if match.winner == match.team_a %}text-kong-gold{% else %}text-white{% endif %}">
+                                {{ match.team_a.name }}
+                            </span>
+                            <span class="text-gray-500 mx-4">VS</span>
+                            <span class="text-lg font-semibold {% if match.winner == match.team_b %}text-kong-gold{% else %}text-white{% endif %}">
+                                {{ match.team_b.name }}
+                            </span>
+                        </div>
+                        <div>
+                            {% if match.winner %}
+                            <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
+                                ✅ Completado
+                            </span>
+                            {% else %}
+                            <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">
+                                ⏳ Pendiente
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if match.winner %}
+                    <div class="text-sm text-gray-400 mb-3">
+                        Ganador: <span class="text-kong-gold font-semibold">{{ match.winner.name }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex items-center space-x-2">
+                        {% if not match.winner %}
+                        <!-- Set Winner Form -->
+                        <form method="post" class="flex-1 flex space-x-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="set_winner">
+                            <input type="hidden" name="match_id" value="{{ match.id }}">
+                            <select name="winner_id" required class="flex-1 px-3 py-1 bg-kong-dark border border-kong-gold/30 rounded text-white text-sm">
+                                <option value="">Seleccionar ganador...</option>
+                                <option value="{{ match.team_a.id }}">{{ match.team_a.name }}</option>
+                                <option value="{{ match.team_b.id }}">{{ match.team_b.name }}</option>
+                            </select>
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded text-sm transition">
+                                Registrar
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <!-- Delete Match -->
+                        <form method="post" onsubmit="return confirm('¿Eliminar este partido?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_match">
+                            <input type="hidden" name="match_id" value="{{ match.id }}">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded text-sm transition">
+                                🗑️
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-center text-gray-400 py-4">No hay partidos en esta jornada</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-kong-purple rounded-lg shadow-lg p-12 text-center">
+    <p class="text-gray-400 text-xl">No hay jornadas creadas todavía</p>
+    <p class="text-gray-500 text-sm mt-2">Crea una jornada para empezar a agregar partidos</p>
+</div>
+{% endif %}
+{% endblock %}

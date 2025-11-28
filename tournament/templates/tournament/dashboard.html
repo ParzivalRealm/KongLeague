@@ -1,0 +1,109 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Dashboard - KongLeague{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-kong-gold mb-2 flex items-center">
+        <span class="mr-3">📊</span> Panel de Administración
+    </h1>
+    <p class="text-gray-400 text-lg">
+        Bienvenido, {{ user.username }}
+    </p>
+</div>
+
+<!-- Quick Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-kong-purple rounded-lg shadow-lg p-6 border-l-4 border-kong-gold">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Equipos</p>
+                <p class="text-3xl font-bold text-white">{{ teams.count }}</p>
+            </div>
+            <span class="text-4xl">🦍</span>
+        </div>
+    </div>
+
+    <div class="bg-kong-purple rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Jornadas</p>
+                <p class="text-3xl font-bold text-white">{{ match_days.count }}</p>
+            </div>
+            <span class="text-4xl">📅</span>
+        </div>
+    </div>
+
+    <div class="bg-kong-purple rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Partidos Completados</p>
+                <p class="text-3xl font-bold text-white">{{ completed_matches }}</p>
+            </div>
+            <span class="text-4xl">✅</span>
+        </div>
+    </div>
+
+    <div class="bg-kong-purple rounded-lg shadow-lg p-6 border-l-4 border-yellow-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-sm">Total Partidos</p>
+                <p class="text-3xl font-bold text-white">{{ total_matches }}</p>
+            </div>
+            <span class="text-4xl">⚔️</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <a href="{% url 'manage_teams' %}" class="bg-kong-purple hover:bg-kong-dark rounded-lg shadow-lg p-6 transition transform hover:scale-105 block">
+        <div class="text-center">
+            <span class="text-5xl mb-3 block">🦍</span>
+            <h3 class="text-xl font-bold text-kong-gold mb-2">Gestionar Equipos</h3>
+            <p class="text-gray-400 text-sm">Agregar, editar o eliminar equipos</p>
+        </div>
+    </a>
+
+    <a href="{% url 'manage_matches' %}" class="bg-kong-purple hover:bg-kong-dark rounded-lg shadow-lg p-6 transition transform hover:scale-105 block">
+        <div class="text-center">
+            <span class="text-5xl mb-3 block">⚔️</span>
+            <h3 class="text-xl font-bold text-kong-gold mb-2">Gestionar Partidos</h3>
+            <p class="text-gray-400 text-sm">Crear jornadas y registrar resultados</p>
+        </div>
+    </a>
+
+    <a href="{% url 'tournament_settings' %}" class="bg-kong-purple hover:bg-kong-dark rounded-lg shadow-lg p-6 transition transform hover:scale-105 block">
+        <div class="text-center">
+            <span class="text-5xl mb-3 block">⚙️</span>
+            <h3 class="text-xl font-bold text-kong-gold mb-2">Configuración</h3>
+            <p class="text-gray-400 text-sm">Estado del torneo y campeón</p>
+        </div>
+    </a>
+</div>
+
+<!-- Tournament Status -->
+<div class="mt-8 bg-kong-purple rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold text-kong-gold mb-4">Estado del Torneo</h2>
+    <div class="space-y-2">
+        <p class="text-gray-300">
+            <span class="font-semibold">Nombre:</span> {{ tournament.name }}
+        </p>
+        <p class="text-gray-300">
+            <span class="font-semibold">Estado:</span>
+            <span class="px-3 py-1 rounded-full text-sm font-semibold
+                {% if tournament.status == 'completed' %}bg-green-500/20 text-green-400
+                {% elif tournament.status == 'in_progress' %}bg-yellow-500/20 text-yellow-400
+                {% else %}bg-gray-500/20 text-gray-400{% endif %}">
+                {{ tournament.get_status_display }}
+            </span>
+        </p>
+        {% if tournament.champion %}
+        <p class="text-gray-300">
+            <span class="font-semibold">Campeón:</span>
+            <span class="text-kong-gold font-bold">{{ tournament.champion.name }} 🏆</span>
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

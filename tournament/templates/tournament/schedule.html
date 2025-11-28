@@ -1,0 +1,100 @@
+{% extends 'tournament/base.html' %}
+
+{% block title %}Calendario - KongLeague{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-kong-gold mb-2 flex items-center">
+        <span class="mr-3">📅</span> Calendario de Partidos
+    </h1>
+    <p class="text-gray-400 text-lg">
+        Todos los enfrentamientos del torneo
+    </p>
+</div>
+
+{% if match_days %}
+<div class="space-y-6">
+    {% for match_day in match_days %}
+    <div class="bg-kong-purple rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-kong-dark border-b border-kong-gold/20 cursor-pointer hover:bg-kong-gold/10 transition" onclick="toggleMatchDay('day-{{ match_day.id }}')">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-kong-gold">
+                    {{ match_day.name }}
+                </h2>
+                <div class="flex items-center space-x-4">
+                    {% if match_day.date %}
+                    <span class="text-gray-400">{{ match_day.date|date:"d/m/Y" }}</span>
+                    {% endif %}
+                    <span class="text-gray-500 text-2xl" id="arrow-day-{{ match_day.id }}">▼</span>
+                </div>
+            </div>
+        </div>
+        <div id="day-{{ match_day.id }}" class="p-6 space-y-4">
+            {% for match in match_day.matches.all %}
+            <div class="bg-kong-dark rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 text-right">
+                        <span class="text-lg {% if match.winner == match.team_a %}text-kong-gold font-bold{% elif match.winner %}text-gray-500{% else %}text-white{% endif %}">
+                            {{ match.team_a.name }}
+                        </span>
+                    </div>
+                    <div class="px-8">
+                        <span class="text-2xl font-bold text-gray-500">VS</span>
+                    </div>
+                    <div class="flex-1 text-left">
+                        <span class="text-lg {% if match.winner == match.team_b %}text-kong-gold font-bold{% elif match.winner %}text-gray-500{% else %}text-white{% endif %}">
+                            {{ match.team_b.name }}
+                        </span>
+                    </div>
+                    <div class="ml-6">
+                        {% if match.winner %}
+                        <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">
+                            Completado
+                        </span>
+                        {% else %}
+                        <span class="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-semibold">
+                            Pendiente
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if match.winner %}
+                <div class="mt-3 text-center text-sm text-gray-400">
+                    Ganador: <span class="text-kong-gold font-semibold">{{ match.winner.name }}</span>
+                    {% if match.played_at %}
+                    - {{ match.played_at|date:"d/m/Y H:i" }}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-center text-gray-400 py-4">
+                No hay partidos programados para esta jornada
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-kong-purple rounded-lg shadow-lg p-12 text-center">
+    <p class="text-gray-400 text-xl">
+        No hay jornadas programadas todavía
+    </p>
+</div>
+{% endif %}
+
+<script>
+function toggleMatchDay(dayId) {
+    const element = document.getElementById(dayId);
+    const arrow = document.getElementById('arrow-' + dayId);
+    if (element.style.display === 'none') {
+        element.style.display = 'block';
+        arrow.textContent = '▼';
+    } else {
+        element.style.display = 'none';
+        arrow.textContent = '▶';
+    }
+}
+</script>
+{% endblock %}
