@@ -31,6 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-oqky=1!6lpsi_)fqcx^v6$vl%c
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+CSRF_TRUSTED_ORIGINS = ['https://kongleague.up.railway.app']
 
 
 # Application definition
