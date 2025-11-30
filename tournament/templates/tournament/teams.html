@@ -20,7 +20,12 @@
             <!-- Team Logo/Icon -->
             <div class="flex items-center justify-center mb-4">
                 {% if team_data.team.logo %}
-                <img src="{{ team_data.team.logo.url }}" alt="{{ team_data.team.name }}" class="w-24 h-24 rounded-full border-2 border-kong-gold object-cover">
+                <img
+                    src="{{ team_data.team.logo.url }}"
+                    alt="{{ team_data.team.name }}"
+                    class="w-24 h-24 rounded-full border-2 border-kong-gold object-cover cursor-pointer hover:border-yellow-400 hover:scale-105 transition"
+                    onclick="openImageModal('{{ team_data.team.logo.url }}', '{{ team_data.team.name }}')"
+                >
                 {% else %}
                 <div class="w-24 h-24 rounded-full bg-kong-dark border-2 border-kong-gold flex items-center justify-center text-4xl">
                     🦍
@@ -75,4 +80,52 @@
     </p>
 </div>
 {% endif %}
+
+<!-- Image Modal -->
+<div id="imageModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onclick="closeImageModal(event)">
+    <div class="relative max-w-3xl max-h-[90vh]">
+        <!-- Close button -->
+        <button
+            onclick="closeImageModal(event, true)"
+            class="absolute -top-10 right-0 text-white hover:text-kong-gold text-3xl font-bold transition"
+        >
+            &times;
+        </button>
+        <!-- Team name -->
+        <p id="modalTeamName" class="absolute -top-10 left-0 text-kong-gold font-bold text-lg"></p>
+        <!-- Image -->
+        <img
+            id="modalImage"
+            src=""
+            alt=""
+            class="max-w-full max-h-[80vh] rounded-lg border-4 border-kong-gold shadow-2xl"
+            onclick="event.stopPropagation()"
+        >
+    </div>
+</div>
+
+<script>
+function openImageModal(imageUrl, teamName) {
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('modalImage').alt = teamName;
+    document.getElementById('modalTeamName').textContent = teamName;
+    document.getElementById('imageModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal(event, forceClose = false) {
+    if (forceClose || event.target.id === 'imageModal') {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('imageModal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+});
+</script>
 {% endblock %}
