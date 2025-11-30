@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator
 class Team(models.Model):
     """Represents a tournament team"""
     name = models.CharField(max_length=100, unique=True)
-    logo_url = models.URLField(blank=True, null=True)
+    logo = models.ImageField(upload_to='team_logos/', blank=True, null=True)
     captain_name = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

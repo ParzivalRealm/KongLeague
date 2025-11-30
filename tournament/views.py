@@ -129,13 +129,13 @@ def manage_teams_view(request):
 
         if action == 'add':
             name = request.POST.get('name')
-            logo_url = request.POST.get('logo_url')
+            logo = request.FILES.get('logo')
             captain_name = request.POST.get('captain_name')
 
             if name:
                 Team.objects.create(
                     name=name,
-                    logo_url=logo_url or None,
+                    logo=logo,
                     captain_name=captain_name or None
                 )
                 messages.success(request, f'Equipo "{name}" creado exitosamente')
@@ -153,8 +153,15 @@ def manage_teams_view(request):
             team_id = request.POST.get('team_id')
             team = get_object_or_404(Team, id=team_id)
             team.name = request.POST.get('name', team.name)
-            team.logo_url = request.POST.get('logo_url') or None
             team.captain_name = request.POST.get('captain_name') or None
+
+            # Handle logo upload - only update if new file is provided
+            if 'logo' in request.FILES:
+                team.logo = request.FILES['logo']
+            # Handle logo removal if checkbox is checked
+            elif request.POST.get('remove_logo'):
+                team.logo = None
+
             team.save()
             messages.success(request, f'Equipo "{team.name}" actualizado')
 

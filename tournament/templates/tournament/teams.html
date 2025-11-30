@@ -19,8 +19,8 @@
         <div class="p-6">
             <!-- Team Logo/Icon -->
             <div class="flex items-center justify-center mb-4">
-                {% if team_data.team.logo_url %}
-                <img src="{{ team_data.team.logo_url }}" alt="{{ team_data.team.name }}" class="w-24 h-24 rounded-full border-2 border-kong-gold">
+                {% if team_data.team.logo %}
+                <img src="{{ team_data.team.logo.url }}" alt="{{ team_data.team.name }}" class="w-24 h-24 rounded-full border-2 border-kong-gold object-cover">
                 {% else %}
                 <div class="w-24 h-24 rounded-full bg-kong-dark border-2 border-kong-gold flex items-center justify-center text-4xl">
                     🦍
